@@ -163,21 +163,20 @@ def main():
             rainfall = pd.concat([data['local_date_time_full'].astype(str), data['rain_trace']], axis=1)
             rainfall['local_date_time_full'] = pd.to_datetime(rainfall['local_date_time_full'])
             rainfall['Time'] = rainfall['local_date_time_full'].dt.time
-            reset_time = datetime.strptime('09:30:00', '%H:%M:%S')
+            reset_time = datetime.strptime('09:02:00', '%H:%M:%S')
 
             rain_data = rainfall['rain_trace']
             rain = []
             for value_i, value_i_plus_1, t, dt in zip(rain_data, rain_data[1:], rainfall['Time'],
                                                       rainfall['local_date_time_full']):
-                if reset_time.time() != t:
+                if t > reset_time.time():
                     if math.isnan(float(value_i)):
                         rain.append([str(dt), value_i])
-
                     else:
                         rain.append([str(dt), round(float(value_i) - float(value_i_plus_1), 1)])
                 else:
                     rain.append([str(dt), float(value_i)])
-
+            # print(rain)
             rain_1 = pd.DataFrame(np.array(rain), columns=['Date_time', 'Actual_rain'])
             rain_1['Date_time'] = pd.to_datetime(rain_1['Date_time'])
             rain_1['Date'] = rain_1['Date_time'].dt.date
